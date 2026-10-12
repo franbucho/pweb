@@ -1,0 +1,32 @@
+.challenge-layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:32px; align-items:start; }
+.challenge-hero { padding-bottom:40px; }
+.challenge-hero h1 { font-size:clamp(2.5rem,6vw,4.5rem); }
+.game-panel { border:1px solid var(--line); background:var(--panel); padding:24px; min-width:0; }
+.game-stats { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px; font-variant-numeric:tabular-nums; }
+.game-stats span { color:var(--muted); font-size:.85rem; }
+.game-stats strong { display:block; color:var(--text); font-size:1.4rem; font-weight:400; }
+#snake-board { display:block; width:100%; aspect-ratio:1; background:#101010; border:1px solid var(--line); touch-action:none; }
+.game-options { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:18px 0; }
+.game-options label { font-size:.85rem; color:var(--muted); }
+.game-options select { background:var(--bg); color:var(--text); border:1px solid var(--line); padding:10px; font:inherit; min-height:44px; max-width:100%; }
+.game-button { cursor:pointer; color:var(--text); background:transparent; }
+.game-button:disabled { cursor:default; opacity:.5; }
+#game-status { min-height:3.4em; font-size:.9rem; margin:18px 0 0; }
+#camera-preview { width:min(200px,100%); aspect-ratio:4/3; object-fit:cover; transform:scaleX(-1); border:1px solid var(--line); margin-top:16px; }
+[hidden] { display:none !important; }
+.direction-pad { display:grid; grid-template-columns:repeat(3,48px); grid-template-areas:'. up .' 'left down right'; gap:6px; margin:16px auto 0; width:max-content; }
+.direction-pad button { min-height:48px; background:var(--bg); border:1px solid var(--line); color:var(--text); cursor:pointer; font-size:1.2rem; }
+.direction-pad [data-direction=up] { grid-area:up; }
+.direction-pad [data-direction=left] { grid-area:left; }
+.direction-pad [data-direction=down] { grid-area:down; }
+.direction-pad [data-direction=right] { grid-area:right; }
+.score-list { list-style:none; padding:0; margin:16px 0 0; }
+.score-list li { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:12px 0; border-top:1px solid var(--line); font-size:.9rem; overflow-wrap:anywhere; }
+.score-list small { display:block; color:var(--muted); font-size:.75rem; }
+.score-list strong { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.challenge-sidebar { display:grid; gap:24px; min-width:0; }
+.challenge-sidebar h2 { font-size:1.65rem; }
+.fine-print { font-size:.8rem; }
+.auth-actions { display:flex; gap:12px; flex-wrap:wrap; }
+.game-button:focus-visible,select:focus-visible,.direction-pad button:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+@media(max-width:800px) { .challenge-layout { grid-template-columns:1fr; } .game-panel { padding:18px; } }
