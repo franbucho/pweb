@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snake Challenge | Francisco Villahermosa</title>
+  <meta name="description" content="Play Francisco Villahermosa’s face-controlled Snake challenge. Keep your game history and compete on the SnakeRetro leaderboard.">
+  <meta name="theme-color" content="#141414">
+  <link rel="canonical" href="https://franciscovillahermosa.com/Challenge.html">
+  <meta property="og:title" content="Snake Challenge | Francisco Villahermosa">
+  <meta property="og:description" content="Play Francisco Villahermosa’s face-controlled Snake challenge. Keep your game history and compete on the SnakeRetro leaderboard.">
+  <meta property="og:url" content="https://franciscovillahermosa.com/Challenge.html">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js" defer></script>
+  <link rel="stylesheet" href="snake.css">
+  <script src="snake-config.js" defer></script>
+  <script src="snake-engine.js" defer></script>
+  <script src="snake.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header"><div class="container header-inner">
+    <a class="brand" href="index.html">Francisco Villahermosa<small>Automation &amp; software development</small></a>
+    <button class="menu-toggle" type="button" aria-controls="navigation" aria-expanded="false">Menu</button>
+    <nav class="nav" id="navigation" aria-label="Main navigation"><a href="index.html">Home</a><a href="About-Me.html">About</a><a href="RPA.html">Automation</a><a href="DataVisualitation.html">The book</a><a href="Contact.html">Contact</a><a href="Challenge.html" aria-current="page">Challenge</a></nav>
+  </div></header>
+  <main id="main"><section class="hero challenge-hero container"><p class="eyebrow">Interactive project · SnakeRetro</p><h1>Face the challenge.</h1><p class="lead">Move your head. Guide the snake. Beat your personal best.</p><p>Keep your head centered for calibration, then move left, right, up, or down. Each food adds 10 points. Avoid the walls and your own tail.</p></section>
+<section class="section"><div class="container challenge-layout">
+  <div class="game-panel">
+    <div class="game-stats"><span>Score<strong id="game-score">0</strong></span><span>Time<strong id="game-time">0:00</strong></span><span>Device best<strong id="game-best">0</strong></span></div>
+    <canvas id="snake-board" width="600" height="600" role="img" aria-label="Snake game board">Your browser needs canvas support to play.</canvas>
+    <div class="game-options"><label for="control-mode">Control</label><select id="control-mode"><option value="face">Face / camera</option><option value="manual">Keyboard / touch</option></select><button type="button" class="button primary game-button" id="game-start">Start challenge</button><button type="button" class="button game-button" id="game-stop" disabled>End game</button></div>
+    <p id="game-status" role="status">Choose a control mode and start. No sign-in required.</p>
+    <video id="camera-preview" muted playsinline hidden aria-label="Mirrored front camera preview"></video>
+    <div class="direction-pad" aria-label="Touch controls"><button type="button" data-direction="up" aria-label="Move up">↑</button><button type="button" data-direction="left" aria-label="Move left">←</button><button type="button" data-direction="down" aria-label="Move down">↓</button><button type="button" data-direction="right" aria-label="Move right">→</button></div>
+    <p class="fine-print">In keyboard / touch mode, use arrow keys, swipe the board, or tap the direction buttons. Press Escape to end a game. Face mode uses the front camera; images stay on your device. Switching tabs ends the game and turns off the camera.</p>
+  </div>
+  <aside class="challenge-sidebar" aria-label="Scores and game history">
+    <section class="card"><p class="eyebrow">Shared leaderboard</p><h2>Can you make the top 10?</h2><p class="fine-print" id="account-status" role="status">Connecting optional Google sign-in…</p><div class="auth-actions"><button type="button" class="button game-button" id="google-login" disabled>Sign in with Google</button><button type="button" class="button game-button" id="google-logout" hidden>Sign out</button></div><p class="fine-print" id="ranking-status" role="status">Connecting the existing SnakeRetro ranking…</p><ol id="global-scores" class="score-list" aria-label="Global best scores"></ol><button type="button" class="button game-button" id="ranking-refresh">Refresh ranking</button></section>
+    <section class="card"><p class="eyebrow">Your progress</p><h2>Game history</h2><p class="fine-print" id="history-note">Your games are stored in this browser.</p><ol id="game-history" class="score-list" aria-label="Recent games"></ol></section>
+  </aside>
+</div></section>
+<section class="section"><div class="container article"><h2>From an experiment to a challenge.</h2><p>This game adapts my SnakeRetro project, using face landmark detection to translate head movements into game controls.</p><a href="https://github.com/franbucho/ProfileMiniGame">Explore the original project on GitHub →</a></div></section></main>
+  <footer class="footer"><div class="container footer-inner"><p>Francisco Villahermosa<br>New York, NY · Automation with purpose.</p><div class="socials"><a href="https://www.linkedin.com/in/franbucho">LinkedIn</a><a href="https://github.com/franbucho">GitHub</a><a href="mailto:franciscovillahermosa@gmail.com">Email</a></div></div></footer>
+</body>
+</html>
