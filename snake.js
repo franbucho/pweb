@@ -177,11 +177,20 @@
   document.addEventListener('visibilitychange',() => { if (document.hidden && state !== 'idle') finish(true,'Game ended when the page was hidden.'); });
   window.addEventListener('pagehide',() => finish(false,'Game stopped.'));
 
+  // Firebase modular SDK (ES modules), pinned to an exact version.
+  const FIREBASE_BASE = 'https://www.gstatic.com/firebasejs/13.4.0/';
+  let fb = null;
+  function loadFirebase() {
+    let timer = null;
+    const modules = Promise.all(['app','auth','firestore'].map(name => import(`${FIREBASE_BASE}firebase-${name}.js`)));
+    const timeout = new Promise((_,reject) => { timer = setTimeout(() => reject(new Error('Loading timed out')),20000); });
+    return Promise.race([modules,timeout]).finally(() => clearTimeout(timer));
+  }
   async function loadLeaderboard() {
     if (!db) return;
     $('ranking-status').textContent = 'Loading the SnakeRetro leaderboard…';
     try {
-      const snapshot = await db.collection('leaderboards').doc('global').collection('scores').orderBy('score','desc').limit(100).get();
+      const snapshot = await fb.getDocs(fb.query(fb.collection(db,'leaderboards','global','scores'),fb.orderBy('score','desc'),fb.limit(100)));
       const entries = snapshot.docs.map(doc => doc.data()).filter(item => Number.isFinite(item.score)).sort((a,b) => b.score-a.score || (a.time||0)-(b.time||0));
       $('global-scores').replaceChildren();
       entries.slice(0,10).forEach((entry,i) => $('global-scores').appendChild(makeEntry(`${i+1}. ${entry.name||'Player'}`,`${formatTime(Math.max(0,Math.floor(entry.time||0)))} · Best score`,entry.score)));
@@ -189,11 +198,11 @@
     } catch { $('ranking-status').textContent = 'The shared ranking is temporarily unavailable. Guest play and device history still work.'; }
   }
   async function saveGlobalScore(user,result) {
-    const ref = db.collection('leaderboards').doc('global').collection('scores').doc(user.uid);
+    const ref = fb.doc(db,'leaderboards','global','scores',user.uid);
     $('account-status').textContent = 'Saving your record…';
     try {
-      await db.runTransaction(async transaction => {
-        const previous = await transaction.get(ref), old = previous.exists ? previous.data() : null;
+      await fb.runTransaction(db,async transaction => {
+        const previous = await transaction.get(ref), old = previous.exists() ? previous.data() : null;
         if (!old || result.score > old.score || (result.score === old.score && result.seconds < old.time)) {
           transaction.set(ref,{name:user.displayName||'Player',photoURL:user.photoURL||'',score:result.score,time:result.seconds,country:old?.country||'N/A',countryCode:old?.countryCode||'N/A'},{merge:true});
         }
@@ -203,11 +212,12 @@
   }
   async function setupRanking() {
     try {
-      await loadScript('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
-      await Promise.all(['auth','firestore'].map(service => loadScript(`https://www.gstatic.com/firebasejs/8.10.0/firebase-${service}.js`)));
-      firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); auth = firebase.auth();
+      const [appModule,authModule,firestoreModule] = await loadFirebase();
+      fb = {...authModule,...firestoreModule};
+      const app = appModule.initializeApp(FIREBASE_CONFIG);
+      db = fb.getFirestore(app); auth = fb.getAuth(app);
       $('google-login').disabled = false;
-      auth.onAuthStateChanged(user => {
+      fb.onAuthStateChanged(auth,user => {
         currentUser = user; $('google-login').hidden = !!user; $('google-logout').hidden = !user;
         $('account-status').textContent = user ? `Signed in as ${user.displayName||'Player'}. Completed games update your best shared score.` : 'Play as a guest, or sign in with Google to save your best score to the shared ranking.';
       });
@@ -216,10 +226,10 @@
   }
   $('google-login').addEventListener('click',async () => {
     if (!auth) return;
-    try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    try { await fb.signInWithPopup(auth,new fb.GoogleAuthProvider()); }
     catch (error) { $('account-status').textContent = error.code === 'auth/unauthorized-domain' ? 'Google sign-in is not enabled for this website yet. You can still play as a guest.' : 'Sign-in did not complete. Allow popups and try again, or continue as a guest.'; }
   });
-  $('google-logout').addEventListener('click',() => auth?.signOut().catch(() => { $('account-status').textContent = 'Sign-out did not complete. Please try again.'; }));
+  $('google-logout').addEventListener('click',() => auth && fb.signOut(auth).catch(() => { $('account-status').textContent = 'Sign-out did not complete. Please try again.'; }));
   $('ranking-refresh').addEventListener('click',loadLeaderboard);
   readHistory(); draw(); setupRanking();
 })();

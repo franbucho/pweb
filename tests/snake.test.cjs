@@ -26,7 +26,7 @@ function engineTests() {
   console.log('PASS engine: food, movement, reversals, collision, tail, full board');
 }
 
-function harness({stored = null, storageError = false, signedIn = false, denyCamera = false} = {}) {
+function harness({stored = null, storageError = false, signedIn = false, denyCamera = false, firebase = false} = {}) {
   const elements = new Map(), intervals = new Map(), timeouts = new Map(), listeners = new Map();
   const memory = new Map(stored ? [['fv.snake.history.v1', stored]] : []);
   const engines = [], transactions = [];
@@ -70,8 +70,17 @@ function harness({stored = null, storageError = false, signedIn = false, denyCam
     close() { closedTrackers++; return Promise.resolve(); }
   };
   sandbox.window = sandbox;
-  vm.runInNewContext(fs.readFileSync(require.resolve('../snake.js'),'utf8'),sandbox);
-  return {$, document, listeners, engines, memory, intervals, timeouts, cameraRequests: () => cameraRequests, stoppedTracks: () => stoppedTracks, closedTrackers: () => closedTrackers, face: nose => faceCallback({multiFaceLandmarks:[[null,null,null,null,nose]]}), advance: n => {now += n;}, tick: () => [...intervals.values()].forEach(fn => fn())};
+  const imports = [];
+  const script = new vm.Script(fs.readFileSync(require.resolve('../snake.js'),'utf8'), {
+    filename: 'snake.js',
+    importModuleDynamically: specifier => {
+      imports.push(specifier);
+      if (!firebase) throw new Error('offline');
+      return import(require('node:url').pathToFileURL(require.resolve('./fake-firebase.mjs')).href);
+    }
+  });
+  script.runInContext(vm.createContext(sandbox));
+  return {$, imports, document, listeners, engines, memory, intervals, timeouts, cameraRequests: () => cameraRequests, stoppedTracks: () => stoppedTracks, closedTrackers: () => closedTrackers, face: nose => faceCallback({multiFaceLandmarks:[[null,null,null,null,nose]]}), advance: n => {now += n;}, tick: () => [...intervals.values()].forEach(fn => fn())};
 }
 const flush = async () => { for (let i=0;i<8;i++) await Promise.resolve(); };
 async function interfaceTests() {
@@ -106,4 +115,28 @@ async function interfaceTests() {
   console.log('PASS face calibration, directional input, record mode, camera/tracker cleanup');
   console.log('PASS interface: guest play, history persistence, duplicates, unavailable storage, hidden page, camera denial/cancellation, CDN failure fallback');
 }
-engineTests(); interfaceTests().catch(error => {console.error(error);process.exitCode=1;});
+async function firebaseTests() {
+  const fake = await import(require('node:url').pathToFileURL(require.resolve('./fake-firebase.mjs')).href);
+  const offline = harness(); await flush();
+  assert.match(offline.$('ranking-status').textContent,/unavailable/,'CDN failure falls back');
+  const h = harness({firebase: true}); await flush(); await flush();
+  assert.equal(h.imports.length,3);
+  for (const name of ['app','auth','firestore']) assert(h.imports.includes(`https://www.gstatic.com/firebasejs/13.4.0/firebase-${name}.js`),`loads ${name} module`);
+  assert(!h.imports.some(url => url.includes('8.10.0')),'old SDK is gone');
+  assert.equal(h.$('google-login').disabled,false,'sign-in enabled once Firebase loads');
+  assert(fake.log.some(([name,path]) => name === 'getDocs' && path === 'leaderboards/global/scores'),'leaderboard query');
+  await h.$('google-login').fire('click');
+  assert(fake.log.some(([name,kind,provider]) => name === 'signInWithPopup' && kind === 'auth' && provider),'Google popup sign-in');
+  fake.signIn({uid:'u1',displayName:'Ana',photoURL:''});
+  assert.equal(h.$('google-logout').hidden,false);
+  h.$('game-start').fire('click'); h.engines.at(-1).score = 30; h.advance(5000); h.$('game-stop').fire('click');
+  await flush(); await flush();
+  assert.deepEqual(fake.store.get('leaderboards/global/scores/u1'),{name:'Ana',photoURL:'',score:30,time:5,country:'N/A',countryCode:'N/A'});
+  h.$('game-start').fire('click'); h.engines.at(-1).score = 10; h.$('game-stop').fire('click'); await flush(); await flush();
+  assert.equal(fake.store.get('leaderboards/global/scores/u1').score,30,'lower score does not overwrite record');
+  assert.equal(h.$('global-scores').children.length,1,'ranking re-rendered');
+  h.$('google-logout').fire('click'); await flush();
+  assert(fake.log.some(([name]) => name === 'signOut'),'sign-out');
+  console.log('PASS firebase 13.4.0 modular: module URLs, leaderboard query, sign-in/out, transactional best-score save, CDN fallback');
+}
+engineTests(); interfaceTests().then(firebaseTests).catch(error => {console.error(error);process.exitCode=1;});

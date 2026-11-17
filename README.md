@@ -32,7 +32,7 @@ GitHub Pages serves these files directly. Keep `CNAME`. Review changes on the de
 
 ## Snake challenge
 
-`Challenge.html` adapts the face-controlled game from `franbucho/ProfileMiniGame`, preserving its 30×30 board, 120 ms tick, and 10 points per food. `snake-engine.js` contains independent game logic; `snake.js` handles camera calibration, controls, history, and optional Firebase integration. It has no email notifications or IP geolocation.
+`Challenge.html` adapts the face-controlled game from `franbucho/ProfileMiniGame`, preserving its 30×30 board, 120 ms tick, and 10 points per food. `snake-engine.js` contains independent game logic; `snake.js` handles camera calibration, controls, history, and optional Firebase integration (modular SDK 13.4.0, pinned in `FIREBASE_BASE` and loaded with `import()` from gstatic). It has no email notifications or IP geolocation.
 
 Recent game history (up to 50 rounds) is local to each browser. The existing Firebase project `profile-minigame` provides optional Google sign-in and the shared best-score leaderboard. Existing records are preserved; only a signed-in player's own best score is updated. The top 10 display names, score, and duration; email addresses are not displayed. A leaderboard stores best records, while the local history stores every completed round.
 
