@@ -20,7 +20,11 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 - `sitemap.xml`, `robots.txt`: search engine discovery
 - `images/og-cover.png`: social sharing image (1200×630)
 - `site.css`: responsive layout and neutral color palette
-- `site.js`: mobile navigation
+- `site.js`: mobile navigation and book release countdown
+
+## Book launch
+
+The launch target is November 26, 2026 at 00:00 in New York, represented as `2026-11-26T00:00:00-05:00` (`BOOK_LAUNCH` in `site.js`). The timer uses the visitor’s clock, updates each second and never goes negative. When it reaches zero, the timer and the launch date are hidden and the banner only says “Coming soon on Amazon” (the release may slip). Replace that text with the real Amazon link once the book is published.
 
 ## Publication
 

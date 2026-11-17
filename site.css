@@ -231,8 +231,40 @@ p {
   letter-spacing:-.04em;
   font-size:clamp(2.4rem,5vw,4.2rem)
 }
+.countdown {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin:28px 0
+}
+.countdown div {
+  padding:18px 10px;
+  border:1px solid var(--line);
+  text-align:center
+}
+.countdown strong {
+  display:block;
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:400;
+  font-variant-numeric:tabular-nums;
+  line-height:1.2
+}
+.countdown span {
+  display:block;
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-top:8px;
+  color:var(--muted)
+}
+.countdown[hidden] {
+  display:none
+}
 .date {
   font-size:.85rem
+}
+.launch-status {
+  min-height:1.7em
 }
 .list {
   padding-left:22px;
@@ -361,6 +393,16 @@ noscript p {
   }
   .card,.book-banner {
     padding:24px
+  }
+  .countdown {
+    gap:6px
+  }
+  .countdown div {
+    padding:16px 4px
+  }
+  .countdown span {
+    font-size:.6rem;
+    letter-spacing:0
   }
   .footer-inner {
     flex-direction:column
