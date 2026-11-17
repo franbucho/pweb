@@ -8,17 +8,19 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 
 ## Structure
 
-- `index.html`: homepage
+- `index.html`: homepage (services, selected work, book, contact call to action)
+- `Projects.html`: project case studies (problem, solution, stack, result)
+- `RPA.html`: services (existing URL retained)
 - `About-Me.html`: biography and capabilities
-- `RPA.html`: automation services
 - `DataVisualitation.html`: book page (existing URL retained)
-- `Contact.html`: verified contact destinations
+- `Contact.html`: verified contact destinations and FAQ
+- `Challenge.html`: Snake game, linked from the footer
+- `Home.html`: legacy URL, redirects to the homepage
+- `blog/blog.html`: notes placeholder (not linked, `noindex`)
+- `sitemap.xml`, `robots.txt`: search engine discovery
+- `images/og-cover.png`: social sharing image (1200×630)
 - `site.css`: responsive layout and neutral color palette
-- `site.js`: mobile navigation and book release countdown
-
-## Book launch
-
-The launch target is October 30, 2026 at 00:00 in New York, represented as `2026-10-30T00:00:00-04:00`. The timer uses the visitor’s clock, updates each second, never becomes negative, and switches to a launch-date message at expiry. It does not claim Amazon availability until a real purchase link is added. Change `BOOK_LAUNCH` in `site.js` if the exact launch time changes.
+- `site.js`: mobile navigation
 
 ## Publication
 

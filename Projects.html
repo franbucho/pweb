@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects | Francisco Villahermosa</title>
+  <meta name="description" content="Selected RPA, AI agent and integration projects by Francisco Villahermosa: problem, solution, stack and results.">
+  <meta name="theme-color" content="#141414">
+  <link rel="canonical" href="https://franciscovillahermosa.com/Projects.html">
+  <meta property="og:title" content="Projects | Francisco Villahermosa">
+  <meta property="og:description" content="Selected RPA, AI agent and integration projects by Francisco Villahermosa: problem, solution, stack and results.">
+  <meta property="og:url" content="https://franciscovillahermosa.com/Projects.html">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://franciscovillahermosa.com/images/og-cover.png">
+  <link rel="stylesheet" href="site.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header"><div class="container header-inner">
+    <a class="brand" href="index.html">Francisco Villahermosa<small>RPA &amp; AI automation</small></a>
+    <button class="menu-toggle" type="button" aria-controls="navigation" aria-expanded="false">Menu</button>
+    <nav class="nav" id="navigation" aria-label="Main navigation"><a href="index.html">Home</a><a href="RPA.html">Services</a><a href="Projects.html" aria-current="page">Projects</a><a href="About-Me.html">About</a><a href="DataVisualitation.html">The book</a><a href="Contact.html">Contact</a></nav>
+  </div></header>
+  <main id="main"><section class="hero container"><p class="eyebrow">Projects</p><h1>Real processes.<br>Working automations.</h1><p class="lead">A selection of automation and AI projects. Some client and personal systems are private, so they’re described without code links.</p></section>
+  <section class="section"><div class="container"><div class="grid two">
+    <article class="card" id="agent-server"><span class="number">01</span><h3>24/7 AI Agent Operations Server</h3>
+      <p><strong>Problem:</strong> Routine digital chores (inbox checks, reports, monitoring, follow-ups) ate hours every week and needed someone at a computer.</p>
+      <p><strong>Solution:</strong> A Linux server running Claude Code around the clock, controlled by chat from a phone. A coordinator agent hands work to specialized agents (developer, QA, documentation, monitoring) that run on cron schedules and report back on Telegram. A watchdog checks the system every 2 minutes and self-heals it; configuration is backed up daily to a private repo, and secrets live in a password vault.</p>
+      <p><strong>Result:</strong> Runs 24/7 unattended, accepts voice-note commands, and keeps a live status board of every agent.</p>
+      <div class="tags"><span class="tag">Claude Code</span><span class="tag">MCP (Gmail, Drive, Calendar, Sheets)</span><span class="tag">Python</span><span class="tag">Playwright</span><span class="tag">Bash/cron</span><span class="tag">systemd</span><span class="tag">Telegram Bot API</span><span class="tag">faster-whisper</span><span class="tag">Bitwarden CLI</span><span class="tag">Private</span></div>
+    </article>
+    <article class="card" id="report-pipeline"><span class="number">02</span><h3>Nightly Report Pipeline</h3>
+      <p><strong>Problem:</strong> Every night a hotel operation received a dozen system-generated reports by email that had to be downloaded, renamed, filed and summarized by hand.</p>
+      <p><strong>Solution:</strong> An agent that collects the 12 reports from the inbox, names and files them in Google Drive, and prepares the consolidated report email with the key KPIs (occupancy, ADR, revenue) for a human to review.</p>
+      <p><strong>Result:</strong> The nightly filing and summary step went from manual to automated.</p>
+      <div class="tags"><span class="tag">Claude</span><span class="tag">MCP (Gmail, Google Drive)</span><span class="tag">Python</span><span class="tag">Private</span></div>
+    </article>
+    <article class="card" id="reconciliation"><span class="number">03</span><h3>Delivery-Platform Reconciliation Bots</h3>
+      <p><strong>Problem:</strong> A restaurant group had to log into several delivery platforms and its POS every week to download payout reports and reconcile them by hand.</p>
+      <p><strong>Solution:</strong> Modular Selenium bots, one per platform, behind a small desktop app where staff choose the platforms and date range. The bots download the payout reports, file them and produce a reconciliation CSV, logging each run’s status to Google Sheets and saving a screenshot when something fails.</p>
+      <p><strong>Result:</strong> Weekly reconciliation became a one-click run with an audit trail.</p>
+      <div class="tags"><span class="tag">Python</span><span class="tag">Selenium</span><span class="tag">pandas</span><span class="tag">Tkinter</span><span class="tag">gspread (Google Sheets)</span><span class="tag">Private</span></div>
+    </article>
+    <article class="card" id="threat-analyzer"><span class="number">04</span><h3>Threat Analyzer Bot</h3>
+      <p><strong>Problem:</strong> Staff receive suspicious attachments on their phones and open them before anyone can check them.</p>
+      <p><strong>Solution:</strong> A messaging bot and web service. Users forward a file, it is scanned against dozens of antivirus engines through the VirusTotal API, and the user gets a clear “safe to open / don’t open” answer.</p>
+      <p><strong>Result:</strong> Working prototype for mobile-device threat triage.</p>
+      <div class="tags"><span class="tag">Python</span><span class="tag">Flask</span><span class="tag">VirusTotal API</span><span class="tag">WhatsApp bot integration</span><span class="tag">Private</span></div>
+    </article>
+    <article class="card" id="niria"><span class="number">05</span><h3>Niria: AI Eye-Health Pre-screening</h3>
+      <p><strong>Problem:</strong> People put off eye check-ups and don’t know when a symptom needs a specialist.</p>
+      <p><strong>Solution:</strong> A web app that combines an eye photo with a short health questionnaire, runs an AI analysis and generates a PDF report with nearby specialists. It includes role-based portals for patients, doctors and HR teams.</p>
+      <p><strong>Result:</strong> Full product prototype with payments, three languages (EN/ES/ZH) and an admin dashboard.</p>
+      <div class="tags"><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">Firebase (Auth, Firestore, Functions)</span><span class="tag">Google Gemini API</span><span class="tag">Stripe</span><span class="tag">Tailwind</span><span class="tag">Private</span></div>
+    </article>
+    <article class="card" id="rpa-analyzer"><span class="number">06</span><h3>RPA Analyzer</h3>
+      <p><strong>Problem:</strong> Before quoting an automation, you need to know how hard a web page will be to automate.</p>
+      <p><strong>Solution:</strong> A Python tool that loads any URL headless and counts the interactive elements (buttons, inputs, dropdowns), detects the platform and HTTPS, and gives a quick complexity read.</p>
+      <p><strong>Result:</strong> Speeds up automation scoping and estimates. Open source.</p>
+      <div class="tags"><span class="tag">Python</span><span class="tag">Selenium</span><span class="tag">BeautifulSoup</span><span class="tag">Tkinter</span></div>
+      <p><a href="https://github.com/franbucho/RPA-Analyzer-">View the code on GitHub →</a></p>
+    </article>
+  </div></div></section>
+  <section class="section"><div class="container"><div class="split"><div><h2>Have a repetitive process eating your team’s time?</h2></div><div class="actions"><a class="button primary" href="Contact.html">Hire me for a project</a></div></div></div></section></main>
+  <footer class="footer"><div class="container footer-inner"><p>Francisco Villahermosa<br>New York, NY · Automation with purpose.</p><div class="socials"><a href="https://www.linkedin.com/in/franbucho">LinkedIn</a><a href="https://github.com/franbucho">GitHub</a><a href="mailto:franciscovillahermosa@gmail.com">Email</a><a href="Challenge.html">Play Snake</a></div></div></footer>
+</body>
+</html>
