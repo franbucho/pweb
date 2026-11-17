@@ -177,8 +177,8 @@
   document.addEventListener('visibilitychange',() => { if (document.hidden && state !== 'idle') finish(true,'Game ended when the page was hidden.'); });
   window.addEventListener('pagehide',() => finish(false,'Game stopped.'));
 
-  // Firebase modular SDK (ES modules), pinned to an exact version.
-  const FIREBASE_BASE = 'https://www.gstatic.com/firebasejs/13.4.0/';
+  // Firebase modular SDK 13.4.0, self-hosted in vendor/ (no CDN). See vendor/firebase/README.md.
+  const FIREBASE_BASE = './vendor/firebase/13.4.0/';
   let fb = null;
   function loadFirebase() {
     let timer = null;

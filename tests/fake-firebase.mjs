@@ -1,6 +1,7 @@
 // Minimal stand-in for the Firebase modular SDK used by tests/snake.test.cjs.
 export const log = [];
 export const store = new Map();
+export const failures = {transaction: false};
 let authCallback = null;
 
 export function initializeApp(config) { log.push(['initializeApp', config]); return {name: 'app'}; }
@@ -22,6 +23,7 @@ export async function getDocs(q) {
 }
 export async function runTransaction(db, fn) {
   log.push(['runTransaction', db.kind]);
+  if (failures.transaction) throw Object.assign(new Error('permission-denied'), {code: 'permission-denied'});
   return fn({
     get: async ref => ({exists: () => store.has(ref.path), data: () => store.get(ref.path)}),
     set: (ref, data, options) => { log.push(['set', ref.path, options]); store.set(ref.path, {...store.get(ref.path), ...data}); }

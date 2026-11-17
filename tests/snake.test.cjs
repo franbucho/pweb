@@ -76,6 +76,7 @@ function harness({stored = null, storageError = false, signedIn = false, denyCam
     importModuleDynamically: specifier => {
       imports.push(specifier);
       if (!firebase) throw new Error('offline');
+      if (firebase === 'hang') return new Promise(() => {});
       return import(require('node:url').pathToFileURL(require.resolve('./fake-firebase.mjs')).href);
     }
   });
@@ -121,8 +122,9 @@ async function firebaseTests() {
   assert.match(offline.$('ranking-status').textContent,/unavailable/,'CDN failure falls back');
   const h = harness({firebase: true}); await flush(); await flush();
   assert.equal(h.imports.length,3);
-  for (const name of ['app','auth','firestore']) assert(h.imports.includes(`https://www.gstatic.com/firebasejs/13.4.0/firebase-${name}.js`),`loads ${name} module`);
+  for (const name of ['app','auth','firestore']) assert(h.imports.includes(`./vendor/firebase/13.4.0/firebase-${name}.js`),`loads vendored ${name} module`);
   assert(!h.imports.some(url => url.includes('8.10.0')),'old SDK is gone');
+  assert(!h.imports.some(url => /^https?:/.test(url)),'no SDK module is loaded from a CDN');
   assert.equal(h.$('google-login').disabled,false,'sign-in enabled once Firebase loads');
   assert(fake.log.some(([name,path]) => name === 'getDocs' && path === 'leaderboards/global/scores'),'leaderboard query');
   await h.$('google-login').fire('click');
@@ -137,6 +139,60 @@ async function firebaseTests() {
   assert.equal(h.$('global-scores').children.length,1,'ranking re-rendered');
   h.$('google-logout').fire('click'); await flush();
   assert(fake.log.some(([name]) => name === 'signOut'),'sign-out');
-  console.log('PASS firebase 13.4.0 modular: module URLs, leaderboard query, sign-in/out, transactional best-score save, CDN fallback');
+  console.log('PASS firebase 13.4.0 modular: vendored module paths, leaderboard query, sign-in/out, transactional best-score save, load failure fallback');
 }
-engineTests(); interfaceTests().then(firebaseTests).catch(error => {console.error(error);process.exitCode=1;});
+async function firebaseFailureTests() {
+  const fake = await import(require('node:url').pathToFileURL(require.resolve('./fake-firebase.mjs')).href);
+  // (a) The SDK never finishes loading: after 20 s the page falls back to guest mode.
+  const slow = harness({firebase: 'hang'}); await flush();
+  assert.equal(slow.$('ranking-status').textContent,'','ranking still waiting while the SDK loads');
+  const timer = [...slow.timeouts.values()].find(t => t.delay === 20000);
+  assert(timer,'20 s load timeout is armed');
+  timer.fn(); await flush(); await flush();
+  assert.match(slow.$('ranking-status').textContent,/unavailable/,'ranking falls back after timeout');
+  assert.match(slow.$('account-status').textContent,/unavailable/,'sign-in falls back after timeout');
+  slow.$('game-start').fire('click'); slow.engines.at(-1).score = 10; slow.$('game-stop').fire('click');
+  assert.equal(JSON.parse(slow.memory.get('fv.snake.history.v1')).length,1,'guest play still works after timeout');
+  // (b) Saving the record fails (e.g. Firestore rules reject the write).
+  const h = harness({firebase: true}); await flush(); await flush();
+  fake.signIn({uid:'u2',displayName:'Bea',photoURL:''});
+  fake.failures.transaction = true;
+  try {
+    h.$('game-start').fire('click'); h.engines.at(-1).score = 50; h.advance(4000); h.$('game-stop').fire('click');
+    await flush(); await flush();
+  } finally { fake.failures.transaction = false; }
+  assert.match(h.$('account-status').textContent,/could not be saved; try again later/,'friendly error when the save fails');
+  assert(!fake.store.has('leaderboards/global/scores/u2'),'nothing written on failure');
+  assert.equal(JSON.parse(h.memory.get('fv.snake.history.v1'))[0].score,50,'game kept in device history');
+  console.log('PASS firebase failures: 20 s load timeout falls back to guest mode, failed record save shows a friendly error');
+}
+function vendorTests() {
+  const crypto = require('node:crypto'), path = require('node:path');
+  const dir = path.join(__dirname,'..','vendor','firebase','13.4.0');
+  const readme = fs.readFileSync(path.join(__dirname,'..','vendor','firebase','README.md'),'utf8');
+  for (const name of ['app','auth','firestore']) {
+    const file = `firebase-${name}.js`, code = fs.readFileSync(path.join(dir,file));
+    const text = code.toString('utf8');
+    assert(!/(from|import)\s*\(?\s*["']https?:/.test(text),`${file} has no remote imports`);
+    if (name !== 'app') assert(text.includes('from"./firebase-app.js"'),`${file} imports app relatively`);
+    const sha = crypto.createHash('sha256').update(code).digest('hex');
+    assert(new RegExp(`${file}\\s*\\|[^\\n]*${sha}`).test(readme),`${file} sha256 matches vendor/firebase/README.md`);
+  }
+  for (const page of ['Challenge.html','snake.js']) assert(!fs.readFileSync(path.join(__dirname,'..',page),'utf8').includes('gstatic.com/firebasejs'),`${page} does not reference the Firebase CDN`);
+  console.log('PASS vendor: Firebase 13.4.0 modules self-hosted, relative imports, sha256 documented');
+}
+async function vendorModuleTests() {
+  // Load the real vendored SDK (the import graph must resolve locally) and check what snake.js uses.
+  const {pathToFileURL} = require('node:url'), path = require('node:path');
+  const load = name => import(pathToFileURL(path.join(__dirname,'..','vendor','firebase','13.4.0',`firebase-${name}.js`)).href);
+  const [app,auth,firestore] = await Promise.all(['app','auth','firestore'].map(load));
+  assert.equal(app.SDK_VERSION,'13.4.0');
+  for (const name of ['initializeApp']) assert.equal(typeof app[name],'function',name);
+  for (const name of ['getAuth','onAuthStateChanged','GoogleAuthProvider','signInWithPopup','signOut']) assert.equal(typeof auth[name],'function',name);
+  for (const name of ['getFirestore','collection','doc','query','orderBy','limit','getDocs','runTransaction']) assert.equal(typeof firestore[name],'function',name);
+  const db = firestore.getFirestore(app.initializeApp({apiKey:'test',projectId:'demo-test',appId:'1:1:web:1'},'vendor-test'));
+  assert.equal(firestore.doc(db,'leaderboards','global','scores','u1').path,'leaderboards/global/scores/u1');
+  console.log('PASS vendor modules: real SDK 13.4.0 loads offline and exports every function snake.js uses');
+}
+engineTests(); vendorTests();
+vendorModuleTests().then(interfaceTests).then(firebaseTests).then(firebaseFailureTests).catch(error => {console.error(error);process.exitCode=1;});

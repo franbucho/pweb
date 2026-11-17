@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "description": "Marks the vendored Firebase browser builds as ES modules so tests can load them in Node. Ignored by browsers.",
+  "type": "module"
+}
