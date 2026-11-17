@@ -26,9 +26,9 @@
   <section class="section"><div class="container"><div class="grid two">
     <article class="card" id="agent-server"><span class="number">01</span><h3>24/7 AI Agent Operations Server</h3>
       <p><strong>Problem:</strong> Routine digital chores (inbox checks, reports, monitoring, follow-ups) ate hours every week and needed someone at a computer.</p>
-      <p><strong>Solution:</strong> A Linux server running Claude Code around the clock, controlled by chat from a phone. A coordinator agent hands work to specialized agents (developer, QA, documentation, monitoring) that run on cron schedules and report back on Telegram. A watchdog checks the system every 2 minutes and self-heals it; configuration is backed up daily to a private repo, and secrets live in a password vault.</p>
+      <p><strong>Solution:</strong> A Linux server running Claude Code around the clock, controlled by chat from a phone. A coordinator agent hands work to specialized agents (developer, QA, documentation, monitoring) that run on cron schedules and report back on Telegram. The system monitors and repairs itself, and secrets live in a password vault.</p>
       <p><strong>Result:</strong> Runs 24/7 unattended, accepts voice-note commands, and keeps a live status board of every agent.</p>
-      <div class="tags"><span class="tag">Claude Code</span><span class="tag">MCP (Gmail, Drive, Calendar, Sheets)</span><span class="tag">Python</span><span class="tag">Playwright</span><span class="tag">Bash/cron</span><span class="tag">systemd</span><span class="tag">Telegram Bot API</span><span class="tag">faster-whisper</span><span class="tag">Bitwarden CLI</span><span class="tag">Private</span></div>
+      <div class="tags"><span class="tag">Claude Code</span><span class="tag">MCP (Gmail, Drive, Calendar, Sheets)</span><span class="tag">Python</span><span class="tag">Playwright</span><span class="tag">Bash/cron</span><span class="tag">systemd</span><span class="tag">Telegram Bot API</span><span class="tag">faster-whisper</span><span class="tag">Private</span></div>
     </article>
     <article class="card" id="report-pipeline"><span class="number">02</span><h3>Nightly Report Pipeline</h3>
       <p><strong>Problem:</strong> Every night a hotel operation received a dozen system-generated reports by email that had to be downloaded, renamed, filed and summarized by hand.</p>
