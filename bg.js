@@ -5,13 +5,22 @@
 // - Pauses while the tab is hidden; static single frame with prefers-reduced-motion
 //   or Save-Data. No dependencies.
 
-const BG_DESKTOP = { spacing: 24, fps: 30, maxDpr: 2, size: 2.4, alpha: 0.48 };
-const BG_MOBILE = { spacing: 30, fps: 15, maxDpr: 1, size: 2.4, alpha: 0.4 };
+const BG_DESKTOP = { spacing: 24, fps: 30, maxDpr: 2, size: 3.2, alpha: 0.8 };
+const BG_MOBILE = { spacing: 30, fps: 15, maxDpr: 1, size: 3.2, alpha: 0.7 };
 // Opacity of the faint base grid (troughs) and the field window mapped onto the
 // brightness levels: a narrower window = taller, more contrasted wave crests.
-const BG_BASE_ALPHA = 0.08;
-const BG_FIELD_LOW = 0.25;
-const BG_FIELD_RANGE = 0.55;
+const BG_BASE_ALPHA = 0.14;
+const BG_FIELD_LOW = 0.28;
+const BG_FIELD_RANGE = 0.47;
+// Dot colour goes from a dim grey in the troughs to near-white on the crests.
+const BG_COLOR_LOW = 150;
+const BG_COLOR_HIGH = 245;
+
+// CSS fill for brightness k in [0, 1] (0 = trough, 1 = crest).
+function bgFill(k, alpha) {
+  const c = Math.round(BG_COLOR_LOW + (BG_COLOR_HIGH - BG_COLOR_LOW) * k);
+  return `rgba(${c},${c},${c},${(BG_BASE_ALPHA + alpha * Math.pow(k, 1.3)).toFixed(3)})`;
+}
 
 // Brightness level (0..levels-1) for a faded field value v in [0, 1].
 function bgLevel(v, levels) {
@@ -33,12 +42,12 @@ function bgField(x, y, t) {
 
 // Keep the left side (where headings and paragraphs start) calmer on wide screens.
 function bgSideFade(x, width) {
-  if (width <= 640) return 0.7;
+  if (width <= 640) return 0.85;
   const r = x / width;
-  return 0.35 + 0.65 * Math.min(1, Math.max(0, (r - 0.25) / 0.45));
+  return 0.5 + 0.5 * Math.min(1, Math.max(0, (r - 0.25) / 0.45));
 }
 
-if (typeof module !== 'undefined') module.exports = { bgSettings, bgField, bgSideFade, bgLevel, BG_DESKTOP, BG_MOBILE, BG_BASE_ALPHA };
+if (typeof module !== 'undefined') module.exports = { bgSettings, bgField, bgSideFade, bgLevel, bgFill, BG_DESKTOP, BG_MOBILE, BG_BASE_ALPHA };
 
 if (typeof document !== 'undefined' && typeof window !== 'undefined') (function () {
   const canvas = document.createElement('canvas');
@@ -86,9 +95,9 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') (function 
       const list = buckets[l];
       if (!list.length) continue;
       const k = l / (LEVELS - 1);
-      const size = cfg.size * (0.6 + 0.8 * k);
-      // Faint base grid everywhere, brighter dots where the waves crest.
-      ctx.fillStyle = `rgba(214,214,214,${(BG_BASE_ALPHA + cfg.alpha * Math.pow(k, 1.4)).toFixed(3)})`;
+      const size = cfg.size * (0.55 + 0.75 * k);
+      // Dim base grid everywhere, bigger and brighter dots where the waves crest.
+      ctx.fillStyle = bgFill(k, cfg.alpha);
       ctx.beginPath();
       for (const i of list) ctx.rect(points[i] - size / 2, points[i + 1] - size / 2, size, size);
       ctx.fill();

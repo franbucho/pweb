@@ -344,6 +344,11 @@ noscript p {
   z-index:-1;
   pointer-events:none
 }
+/* Soft dark halo so text stays crisp where bright dots pass behind it.
+   Invisible on the plain background and on the opaque cards. */
+h1,h2,h3,p,li,.eyebrow,.brand,.nav a {
+  text-shadow:0 0 2px var(--bg),0 0 8px var(--bg)
+}
 /* Card hover: lift, deeper shadow and an accent edge. Only on devices that can
    really hover, so touch screens never get a "stuck" raised card. */
 @media (hover:hover) and (pointer:fine) {
