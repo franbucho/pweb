@@ -24,7 +24,7 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 - `tools/add_social_meta.py`: (re)writes the Open Graph / Twitter / icon tags between the `SOCIAL-META` markers in each page's `<head>`; title, description and URL come from each page's own `og:` tags. After publishing, refresh LinkedIn's cached preview at https://www.linkedin.com/post-inspector/
 - `site.css`: responsive layout and neutral color palette
 - `site.js`: mobile navigation and book release countdown
-- `bg.js`: subtle animated dot-wave background (one fixed `<canvas>`, no dependencies). Lighter on mobile/touch (sparser grid, 1x resolution, 15 fps) than on desktop (30 fps); pauses while the tab is hidden; draws a single static frame with `prefers-reduced-motion` or Save-Data. Loaded on every page except `Challenge.html` (the game) and the `Home.html` redirect. Tests: `node --test tests/*.cjs`
+- `bg.js`: animated dot-wave background (one fixed `<canvas>`, no dependencies). Lighter on mobile/touch (sparser grid, 1x resolution, 15 fps) than on desktop (30 fps); pauses while the tab is hidden; draws a single static frame with `prefers-reduced-motion` or Save-Data. Loaded on every page except `Challenge.html` (the game) and the `Home.html` redirect. Tests: `node --test tests/*.cjs`
 
 ## Book launch
 

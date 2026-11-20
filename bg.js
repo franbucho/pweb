@@ -1,12 +1,22 @@
 'use strict';
-// Subtle animated background: a grid of dots whose brightness follows slow,
+// Animated background: a grid of dots whose brightness follows slow,
 // overlapping waves. Drawn on one fixed <canvas> behind the content.
 // - Desktop: denser grid, up to 30 fps. Mobile: sparser grid, 1x resolution, 15 fps.
 // - Pauses while the tab is hidden; static single frame with prefers-reduced-motion
 //   or Save-Data. No dependencies.
 
-const BG_DESKTOP = { spacing: 24, fps: 30, maxDpr: 2, size: 1.8, alpha: 0.3 };
-const BG_MOBILE = { spacing: 30, fps: 15, maxDpr: 1, size: 1.8, alpha: 0.26 };
+const BG_DESKTOP = { spacing: 24, fps: 30, maxDpr: 2, size: 2.4, alpha: 0.48 };
+const BG_MOBILE = { spacing: 30, fps: 15, maxDpr: 1, size: 2.4, alpha: 0.4 };
+// Opacity of the faint base grid (troughs) and the field window mapped onto the
+// brightness levels: a narrower window = taller, more contrasted wave crests.
+const BG_BASE_ALPHA = 0.08;
+const BG_FIELD_LOW = 0.25;
+const BG_FIELD_RANGE = 0.55;
+
+// Brightness level (0..levels-1) for a faded field value v in [0, 1].
+function bgLevel(v, levels) {
+  return Math.max(0, Math.min(levels - 1, Math.floor((v - BG_FIELD_LOW) / BG_FIELD_RANGE * levels)));
+}
 
 function bgSettings(width, coarsePointer) {
   return width <= 640 || coarsePointer ? BG_MOBILE : BG_DESKTOP;
@@ -28,7 +38,7 @@ function bgSideFade(x, width) {
   return 0.35 + 0.65 * Math.min(1, Math.max(0, (r - 0.25) / 0.45));
 }
 
-if (typeof module !== 'undefined') module.exports = { bgSettings, bgField, bgSideFade, BG_DESKTOP, BG_MOBILE };
+if (typeof module !== 'undefined') module.exports = { bgSettings, bgField, bgSideFade, bgLevel, BG_DESKTOP, BG_MOBILE, BG_BASE_ALPHA };
 
 if (typeof document !== 'undefined' && typeof window !== 'undefined') (function () {
   const canvas = document.createElement('canvas');
@@ -70,16 +80,15 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') (function 
     const buckets = Array.from({ length: LEVELS }, () => []);
     for (let i = 0; i < points.length; i += 3) {
       const v = bgField(points[i], points[i + 1], t) * points[i + 2];
-      const level = Math.max(0, Math.min(LEVELS - 1, Math.floor((v - 0.2) / 0.7 * LEVELS)));
-      buckets[level].push(i);
+      buckets[bgLevel(v, LEVELS)].push(i);
     }
     for (let l = 0; l < LEVELS; l++) {
       const list = buckets[l];
       if (!list.length) continue;
       const k = l / (LEVELS - 1);
-      const size = cfg.size * (0.7 + 0.6 * k);
+      const size = cfg.size * (0.6 + 0.8 * k);
       // Faint base grid everywhere, brighter dots where the waves crest.
-      ctx.fillStyle = `rgba(214,214,214,${(0.05 + cfg.alpha * Math.pow(k, 1.6)).toFixed(3)})`;
+      ctx.fillStyle = `rgba(214,214,214,${(BG_BASE_ALPHA + cfg.alpha * Math.pow(k, 1.4)).toFixed(3)})`;
       ctx.beginPath();
       for (const i of list) ctx.rect(points[i] - size / 2, points[i + 1] - size / 2, size, size);
       ctx.fill();

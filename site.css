@@ -344,6 +344,26 @@ noscript p {
   z-index:-1;
   pointer-events:none
 }
+/* Card hover: lift, deeper shadow and an accent edge. Only on devices that can
+   really hover, so touch screens never get a "stuck" raised card. */
+@media (hover:hover) and (pointer:fine) {
+  .card,.book-banner {
+    transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease
+  }
+  .card:hover,.book-banner:hover,.card:focus-within,.book-banner:focus-within {
+    transform:translateY(-4px);
+    border-color:var(--accent);
+    box-shadow:0 14px 32px rgba(0,0,0,.55),0 0 0 1px rgba(196,196,196,.25),0 0 22px rgba(196,196,196,.12)
+  }
+}
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce) {
+  .card,.book-banner {
+    transition:none
+  }
+  .card:hover,.book-banner:hover,.card:focus-within,.book-banner:focus-within {
+    transform:none
+  }
+}
 @media print {
   .bg-canvas {
     display:none
