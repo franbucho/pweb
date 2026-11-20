@@ -18,7 +18,10 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 - `Home.html`: legacy URL, redirects to the homepage
 - `blog/blog.html`: notes placeholder (not linked, `noindex`)
 - `sitemap.xml`, `robots.txt`: search engine discovery
-- `images/og-cover.png`: social sharing image (1200×630)
+- `images/og-card.png`: link-preview card (1200×630, dark theme with the dot-wave pattern) used by `og:image` / `twitter:image` on every page
+- `favicon.ico`, `favicon.svg`, `apple-touch-icon.png`: "FV" site icons
+- `tools/make_social_images.py`: regenerates the card and icons (`python3 tools/make_social_images.py`, needs Pillow)
+- `tools/add_social_meta.py`: (re)writes the Open Graph / Twitter / icon tags between the `SOCIAL-META` markers in each page's `<head>`; title, description and URL come from each page's own `og:` tags. After publishing, refresh LinkedIn's cached preview at https://www.linkedin.com/post-inspector/
 - `site.css`: responsive layout and neutral color palette
 - `site.js`: mobile navigation and book release countdown
 - `bg.js`: subtle animated dot-wave background (one fixed `<canvas>`, no dependencies). Lighter on mobile/touch (sparser grid, 1x resolution, 15 fps) than on desktop (30 fps); pauses while the tab is hidden; draws a single static frame with `prefers-reduced-motion` or Save-Data. Loaded on every page except `Challenge.html` (the game) and the `Home.html` redirect. Tests: `node --test tests/*.cjs`
