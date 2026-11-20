@@ -21,6 +21,7 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 - `images/og-cover.png`: social sharing image (1200×630)
 - `site.css`: responsive layout and neutral color palette
 - `site.js`: mobile navigation and book release countdown
+- `bg.js`: subtle animated dot-wave background (one fixed `<canvas>`, no dependencies). Lighter on mobile/touch (sparser grid, 1x resolution, 15 fps) than on desktop (30 fps); pauses while the tab is hidden; draws a single static frame with `prefers-reduced-motion` or Save-Data. Loaded on every page except `Challenge.html` (the game) and the `Home.html` redirect. Tests: `node --test tests/*.cjs`
 
 ## Book launch
 

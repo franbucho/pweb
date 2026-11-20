@@ -336,6 +336,19 @@ main {
 noscript p {
   color:var(--accent)
 }
+/* Animated dot background drawn by bg.js; sits behind all content. */
+.bg-canvas {
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+  pointer-events:none
+}
+@media print {
+  .bg-canvas {
+    display:none
+  }
+}
 
 @media(max-width:900px) {
   .header-inner {
