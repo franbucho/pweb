@@ -8,7 +8,7 @@ Open the repository in VS Code and use Live Server, or run `python3 -m http.serv
 
 ## Structure
 
-- `index.html`: homepage (services, selected work, book, contact call to action)
+- `index.html`: homepage (two-column hero with availability badge, stats, an illustrative "agent operations" demo panel and a technologies strip; then services, selected work, book, contact call to action). The hero stats are marked with a `TODO(Francisco)` comment to confirm; the panel chart is sample data and labeled as such.
 - `Projects.html`: project case studies (problem, solution, stack, result)
 - `RPA.html`: services (existing URL retained)
 - `About-Me.html`: biography and capabilities
